@@ -16,6 +16,7 @@
     flake-utils.lib.eachDefaultSystem (system: 
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        lib = pkgs.lib;
         toolchain = (fenix.packages.${system}.fromManifestFile rust-manifest).toolchain;
       in {
         packages.default = (pkgs.makeRustPlatform {
