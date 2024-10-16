@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+glam = "0.29.0"
 indicatif = "0.17.8"
 image = "0.25"
-nalgebra = "0.33"
-nalgebra-glm = "0.19"
