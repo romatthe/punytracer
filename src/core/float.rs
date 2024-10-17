@@ -10,14 +10,14 @@ impl ApproxEq for f64 {
     fn approx_eq(self, other: Self) -> bool {
         match (self - other).abs()  {
             n if n < EPSILON => true,
-            _                     => false,
+            _                => false,
         }
     }
 
     fn approx_eq_low_precision(self, other: Self) -> bool {
         match (self - other).abs()  {
             n if n < EPSILON_LOW => true,
-            _                         => false,
+            _                    => false,
         }
     }
 }

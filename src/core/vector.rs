@@ -1,5 +1,4 @@
 use crate::core::float::ApproxEq;
-use crate::core::point::Point;
 use crate::core::tuple::Tuple;
 
 #[derive(Clone, Copy, Debug)]
