@@ -10,6 +10,7 @@ pub trait Tuple {
 mod tests {
     use crate::core::point::Point;
     use crate::core::vector::Vector;
+
     use super::*;
 
     #[test]

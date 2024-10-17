@@ -1,15 +1,35 @@
 use crate::core::float::ApproxEq;
 
-#[derive(Debug)]
-struct Color {
-    r: f64,
-    g: f64,
-    b: f64,
+#[derive(Clone, Debug, Default)]
+pub struct Color {
+    pub r: f64,
+    pub g: f64,
+    pub b: f64,
 }
 
 impl Color {
-    fn new(r: f64, g: f64, b: f64) -> Self {
+    pub fn new(r: f64, g: f64, b: f64) -> Self {
         Self { r, g, b, }
+    }
+
+    pub fn to_rgb(&self) -> [u8; 3] {
+        let r = match self.r {
+            r if r < 0.0 => 0u8,
+            r if r > 1.0 => 255u8,
+            r => (r * 255.0) as u8,
+        };
+        let g = match self.g {
+            g if g < 0.0 => 0u8,
+            g if g > 1.0 => 255u8,
+            g => (g * 255.0) as u8,
+        };
+        let b = match self.b {
+            b if b < 0.0 => 0u8,
+            b if b > 1.0 => 255u8,
+            b => (b * 255.0) as u8,
+        };
+
+        [r, g, b]
     }
 }
 
