@@ -2,7 +2,7 @@ use crate::core::float::ApproxEq;
 use crate::core::point::Point;
 use crate::core::tuple::Tuple;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Vector {
     x: f64,
     y: f64,
@@ -10,8 +10,24 @@ pub struct Vector {
 }
 
 impl Vector {
-    pub fn magnitude(&self) -> f64 {
+    fn magnitude(&self) -> f64 {
         (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
+    }
+
+    fn normalize(&self) -> Self {
+        *self / self.magnitude()
+    }
+
+    fn dot(&self, other: Vector) -> f64 {
+        self.x * other.x + self.y * other.y + self.z * other.z
+    }
+
+    fn cross(&self, other: Vector) -> Self {
+        Self::new(
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x
+        )
     }
 }
 
@@ -43,7 +59,9 @@ impl Tuple for Vector {
 
 impl PartialEq for Vector {
     fn eq(&self, other: &Self) -> bool {
-        self.x.approx_eq(other.x) && self.y.approx_eq(other.y) && self.z.approx_eq(other.z)
+        self.x.approx_eq_low_precision(other.x)
+            && self.y.approx_eq_low_precision(other.y)
+            && self.z.approx_eq_low_precision(other.z)
     }
 }
 
@@ -184,5 +202,54 @@ mod tests {
 
         // Then
         assert_eq!(v.magnitude(), 14f64.sqrt());
+    }
+
+    #[test]
+    fn normalizing_a_vector_1() {
+        // Given
+        let v = Vector::new(4.0, 0.0, 0.0);
+
+        // Then
+        assert_eq!(Vector::new(1.0, 0.0, 0.0), v.normalize());
+    }
+
+    #[test]
+    fn normalizing_a_vector_2() {
+        // Given
+        let v = Vector::new(1.0, 2.0, 3.0);
+
+        // Then
+        assert_eq!(Vector::new(0.26726, 0.53452, 0.80178), v.normalize());
+        //                         1/√14,      2/√14,      3/√14
+    }
+
+    #[test]
+    fn magnitude_of_normalized_vector() {
+        // Given
+        let v = Vector::new(1.0, 2.0, 3.0);
+
+        // Then
+        assert_eq!(v.normalize().magnitude(), 1.0);
+    }
+
+    #[test]
+    fn dot_product_of_two_vectors() {
+        // Given
+        let v1 = Vector::new(1.0, 2.0, 3.0);
+        let v2 = Vector::new(2.0, 3.0, 4.0);
+
+        // Then
+        assert_eq!(v1.dot(v2), 20.0);
+    }
+
+    #[test]
+    fn cross_product_of_two_vectors() {
+        // Given
+        let v1 = Vector::new(1.0, 2.0, 3.0);
+        let v2 = Vector::new(2.0, 3.0, 4.0);
+
+        // Then
+        assert_eq!(v1.cross(v2), Vector::new(-1.0, 2.0, -1.0));
+        assert_eq!(v2.cross(v1), Vector::new(1.0, -2.0, 1.0));
     }
 }
