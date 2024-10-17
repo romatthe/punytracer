@@ -9,19 +9,19 @@ pub struct Vector {
 }
 
 impl Vector {
-    fn magnitude(&self) -> f64 {
+    pub fn magnitude(&self) -> f64 {
         (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
     }
 
-    fn normalize(&self) -> Self {
+    pub fn normalize(&self) -> Self {
         *self / self.magnitude()
     }
 
-    fn dot(&self, other: Vector) -> f64 {
+    pub fn dot(&self, other: Vector) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 
-    fn cross(&self, other: Vector) -> Self {
+    pub fn cross(&self, other: Vector) -> Self {
         Self::new(
             self.y * other.z - self.z * other.y,
             self.z * other.x - self.x * other.z,

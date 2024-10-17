@@ -2,7 +2,7 @@ use crate::core::float::ApproxEq;
 use crate::core::tuple::Tuple;
 use crate::core::vector::Vector;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Point {
     x: f64,
     y: f64,

@@ -19,6 +19,14 @@ impl Canvas {
         }
     }
 
+    pub fn width(&self) -> u32 {
+        self.width as u32
+    }
+
+    pub fn height(&self) -> u32 {
+        self.height as u32
+    }
+
     pub fn save_to(&self, path: &impl AsRef<Path>) {
         let file = File::create(path).unwrap();
         let ref mut w = BufWriter::new(file);

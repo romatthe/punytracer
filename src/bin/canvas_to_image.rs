@@ -1,11 +1,5 @@
-use std::ops::Index;
-
-use crate::canvas::Canvas;
-use crate::color::Color;
-
-pub mod core;
-pub mod color;
-pub mod canvas;
+use punytracer::canvas::Canvas;
+use punytracer::color::Color;
 
 fn main() {
     let mut canvas = Canvas::new(800, 600);
