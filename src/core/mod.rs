@@ -1,4 +1,4 @@
-mod float;
-mod point;
-mod tuple;
-mod vector;
+pub mod float;
+pub mod point;
+pub mod tuple;
+pub mod vector;
