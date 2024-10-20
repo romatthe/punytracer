@@ -1,104 +1,44 @@
 use crate::core::float::ApproxEq;
 
-struct Matrix2 {
-    data: [f64; 4]
+pub type Matrix2 = Matrix<2>;
+pub type Matrix3 = Matrix<3>;
+pub type Matrix4 = Matrix<4>;
+
+struct Matrix<const N: usize> {
+    data: [[f64; N]; N]
 }
 
-struct Matrix3 {
-    data: [f64; 9]
-}
-
-struct Matrix4 {
-    data: [f64; 16],
-}
-
-impl Matrix2 {
-    pub fn new () -> Self {
-        Self {
-            data: [0.0; 4],
-        }
+impl<const N: usize> Matrix<N> {
+    pub fn new() -> Self {
+        Self { data: [[0.0; N]; N], }
     }
 }
 
-impl PartialEq for Matrix2 {
+impl<const N: usize> PartialEq for Matrix<N> {
     fn eq(&self, other: &Self) -> bool {
-        self.data
-            .iter().enumerate()
-            .all(|(i, data)| data.approx_eq_low_precision(other.data[i]))
+        for x in 0..N {
+            for y in 0..N {
+                if !self[(x,y)].approx_eq_low_precision(other[(x,y)]) {
+                    return false;
+                }
+            }
+        }
+
+        true
     }
 }
 
-impl std::ops::Index<(usize, usize)> for Matrix2 {
+impl<const N: usize> std::ops::Index<(usize, usize)> for Matrix<N> {
     type Output = f64;
 
     fn index(&self, (x, y): (usize, usize)) -> &Self::Output {
-        &self.data[x * 2 + y]
+        &self.data[x][y]
     }
 }
 
-impl std::ops::IndexMut<(usize, usize)> for Matrix2 {
+impl<const N: usize> std::ops::IndexMut<(usize, usize)> for Matrix<N> {
     fn index_mut(&mut self, (x, y): (usize, usize)) -> &mut Self::Output {
-        &mut self.data[x * 2 + y]
-    }
-}
-
-impl Matrix3 {
-    pub fn new () -> Self {
-        Self {
-            data: [0.0; 9],
-        }
-    }
-}
-
-impl PartialEq for Matrix3 {
-    fn eq(&self, other: &Self) -> bool {
-        self.data
-            .iter().enumerate()
-            .all(|(i, data)| data.approx_eq_low_precision(other.data[i]))
-    }
-}
-
-impl std::ops::Index<(usize, usize)> for Matrix3 {
-    type Output = f64;
-
-    fn index(&self, (x, y): (usize, usize)) -> &Self::Output {
-        &self.data[x * 3 + y]
-    }
-}
-
-impl std::ops::IndexMut<(usize, usize)> for Matrix3 {
-    fn index_mut(&mut self, (x, y): (usize, usize)) -> &mut Self::Output {
-        &mut self.data[x * 3 + y]
-    }
-}
-
-impl Matrix4 {
-    pub fn new () -> Self {
-        Self {
-            data: [0.0; 16],
-        }
-    }
-}
-
-impl PartialEq for Matrix4 {
-    fn eq(&self, other: &Self) -> bool {
-        self.data
-            .iter().enumerate()
-            .all(|(i, data)| data.approx_eq_low_precision(other.data[i]))
-    }
-}
-
-impl std::ops::Index<(usize, usize)> for Matrix4 {
-    type Output = f64;
-
-    fn index(&self, (x, y): (usize, usize)) -> &Self::Output {
-        &self.data[x * 4 + y]
-    }
-}
-
-impl std::ops::IndexMut<(usize, usize)> for Matrix4 {
-    fn index_mut(&mut self, (x, y): (usize, usize)) -> &mut Self::Output {
-        &mut self.data[x * 4 + y]
+        &mut self.data[x][y]
     }
 }
 
