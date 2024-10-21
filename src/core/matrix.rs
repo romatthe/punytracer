@@ -39,6 +39,10 @@ impl Matrix<2> {
                    [0.0, 1.0]],
         }
     }
+
+    pub fn determinant(&self) -> f64 {
+        self[(0,0)] * self[(1,1)] - self[(0,1)] * self[(1,0)]
+    }
 }
 
 impl Matrix<3> {
@@ -47,6 +51,42 @@ impl Matrix<3> {
             data: [[1.0, 0.0, 0.0],
                    [0.0, 1.0, 0.0],
                    [0.0, 0.0, 1.0]],
+        }
+    }
+
+    pub fn submatrix(&self, row: usize, col: usize) -> Matrix<2> {
+        let mut sub = Matrix::<2>::new();
+        let mut new_row = 0;
+        for x in 0..3{
+            let mut new_col = 0;
+            if x != row {
+                for y in 0..3 {
+                    if y != col {
+                        sub[(new_row,new_col)] = self[(x,y)];
+                        new_col += 1;
+                    }
+                }
+                new_row += 1;
+            }
+        }
+
+        sub
+    }
+
+    pub fn determinant(&self) -> f64 {
+        self[(0,0)] * self.cofactor(0, 0)
+            + self[(0,1)] * self.cofactor(0, 1)
+            + self[(0,2)] * self.cofactor(0, 2)
+    }
+
+    pub fn minor(&self, row: usize, col: usize) -> f64 {
+        self.submatrix(row, col).determinant()
+    }
+
+    pub fn cofactor(&self, row: usize, col: usize) -> f64 {
+        match row + col {
+            n if n % 2 == 0 => self.minor(row, col),
+            _               => -self.minor(row, col),
         }
     }
 }
@@ -58,6 +98,43 @@ impl Matrix<4> {
                    [0.0, 1.0, 0.0, 0.0],
                    [0.0, 0.0, 1.0, 0.0],
                    [0.0, 0.0, 0.0, 1.0]],
+        }
+    }
+
+    pub fn submatrix(&self, row: usize, col: usize) -> Matrix<3> {
+        let mut sub = Matrix::<3>::new();
+        let mut new_row = 0;
+        for x in 0..4 {
+            let mut new_col = 0;
+            if x != row {
+                for y in 0..4 {
+                    if y != col {
+                        sub[(new_row,new_col)] = self[(x,y)];
+                        new_col += 1;
+                    }
+                }
+                new_row += 1;
+            }
+        }
+
+        sub
+    }
+
+    pub fn determinant(&self) -> f64 {
+        self[(0,0)] * self.cofactor(0, 0)
+            + self[(0,1)] * self.cofactor(0, 1)
+            + self[(0,2)] * self.cofactor(0, 2)
+            + self[(0,3)] * self.cofactor(0, 3)
+    }
+
+    pub fn minor(&self, row: usize, col: usize) -> f64 {
+        self.submatrix(row, col).determinant()
+    }
+
+    pub fn cofactor(&self, row: usize, col: usize) -> f64 {
+        match row + col {
+            n if n % 2 == 0 => self.minor(row, col),
+            _               => -self.minor(row, col),
         }
     }
 }
@@ -214,15 +291,15 @@ mod tests {
         // Given
         let m1 = Matrix4::from(
             [[ 1.0, 2.0, 3.0, 4.0 ],
-                [ 5.0, 6.0, 7.0, 8.0 ],
-                [ 9.0, 8.0, 7.0, 6.0 ],
-                [ 5.0, 4.0, 3.0, 2.0 ]]
+             [ 5.0, 6.0, 7.0, 8.0 ],
+             [ 9.0, 8.0, 7.0, 6.0 ],
+             [ 5.0, 4.0, 3.0, 2.0 ]]
         );
         let m2 = Matrix4::from(
             [[ 1.0, 2.0, 3.0, 5.0 ],
-                [ 5.0, 6.0, 7.0, 8.0 ],
-                [ 9.0, 8.0, 7.0, 6.0 ],
-                [ 5.0, 4.0, 3.0, 2.0 ]]
+             [ 5.0, 6.0, 7.0, 8.0 ],
+             [ 9.0, 8.0, 7.0, 6.0 ],
+             [ 5.0, 4.0, 3.0, 2.0 ]]
         );
 
         // Then
@@ -234,23 +311,23 @@ mod tests {
         // Given
         let m1 = Matrix4::from(
             [[ 1.0, 2.0, 3.0, 4.0 ],
-                [ 5.0, 6.0, 7.0, 8.0 ],
-                [ 9.0, 8.0, 7.0, 6.0 ],
-                [ 5.0, 4.0, 3.0, 2.0 ]]
+             [ 5.0, 6.0, 7.0, 8.0 ],
+             [ 9.0, 8.0, 7.0, 6.0 ],
+             [ 5.0, 4.0, 3.0, 2.0 ]]
         );
         let m2 = Matrix4::from(
             [[ -2.0, 1.0, 2.0, 3.0 ],
-                [ 3.0, 2.0, 1.0, -1.0 ],
-                [ 4.0, 3.0, 6.0, 5.0 ],
-                [ 1.0, 2.0, 7.0, 8.0 ]]
+             [ 3.0, 2.0, 1.0, -1.0 ],
+             [ 4.0, 3.0, 6.0, 5.0 ],
+             [ 1.0, 2.0, 7.0, 8.0 ]]
         );
 
         // Then
         let res = Matrix4::from(
             [[ 20.0, 22.0, 50.0, 48.0 ],
-                [ 44.0, 54.0, 114.0, 108.0 ],
-                [ 40.0, 58.0, 110.0, 102.0 ],
-                [ 16.0, 26.0, 46.0, 42.0 ]]
+             [ 44.0, 54.0, 114.0, 108.0 ],
+             [ 40.0, 58.0, 110.0, 102.0 ],
+             [ 16.0, 26.0, 46.0, 42.0 ]]
         );
 
         assert_eq!(m1 * m2, res);
@@ -261,9 +338,9 @@ mod tests {
         // Given
         let m = Matrix4::from(
             [[ 1.0, 2.0, 3.0, 4.0 ],
-                [ 2.0, 4.0, 4.0, 2.0 ],
-                [ 8.0, 6.0, 4.0, 1.0 ],
-                [ 0.0, 0.0, 0.0, 1.0 ]]
+             [ 2.0, 4.0, 4.0, 2.0 ],
+             [ 8.0, 6.0, 4.0, 1.0 ],
+             [ 0.0, 0.0, 0.0, 1.0 ]]
         );
         let t = Point::new(1.0, 2.0, 3.0);
 
@@ -276,9 +353,9 @@ mod tests {
         // Given
         let m = Matrix4::from(
             [[ 1.0, 2.0, 3.0, 4.0 ],
-                [ 2.0, 4.0, 4.0, 2.0 ],
-                [ 8.0, 6.0, 4.0, 1.0 ],
-                [ 0.0, 0.0, 0.0, 1.0 ]]
+             [ 2.0, 4.0, 4.0, 2.0 ],
+             [ 8.0, 6.0, 4.0, 1.0 ],
+             [ 0.0, 0.0, 0.0, 1.0 ]]
         );
 
         // Then
@@ -299,15 +376,15 @@ mod tests {
         // Given
         let matrix = Matrix4::from(
             [[ 0.0, 9.0, 3.0, 0.0 ],
-                [ 9.0, 8.0, 0.0, 8.0 ],
-                [ 1.0, 8.0, 5.0, 3.0 ],
-                [ 0.0, 0.0, 5.0, 8.0 ]]
+             [ 9.0, 8.0, 0.0, 8.0 ],
+             [ 1.0, 8.0, 5.0, 3.0 ],
+             [ 0.0, 0.0, 5.0, 8.0 ]]
         );
         let transposed = Matrix4::from(
             [[ 0.0, 9.0, 1.0, 0.0 ],
-                [ 9.0, 8.0, 8.0, 0.0 ],
-                [ 3.0, 0.0, 5.0, 5.0 ],
-                [ 0.0, 8.0, 3.0, 8.0 ]]
+             [ 9.0, 8.0, 8.0, 0.0 ],
+             [ 3.0, 0.0, 5.0, 5.0 ],
+             [ 0.0, 8.0, 3.0, 8.0 ]]
         );
 
         // Then
@@ -319,4 +396,114 @@ mod tests {
         assert_eq!(Matrix4::identity().transpose(), Matrix4::identity());
     }
 
+    #[test]
+    fn determinant_of_2x2_matrix() {
+        // Given
+        let m = Matrix2::from([[1.0, 5.0], [-3.0, 2.0]]);
+
+        // Then
+        assert_eq!(m.determinant(), 17.0);
+    }
+
+    #[test]
+    fn submatrix_of_3x3_matrix() {
+        // Given
+        let matrix = Matrix3::from(
+            [[ 1.0, 5.0, 0.0 ],
+             [ -3.0, 2.0, 7.0 ],
+             [ 0.0, 6.0, -3.0 ]]
+        );
+        let sub = Matrix2::from([[-3.0, 2.0], [0.0, 6.0]]);
+
+        assert_eq!(matrix.submatrix(0, 2), sub);
+    }
+
+    #[test]
+    fn submatrix_of_4x4_matrix() {
+        // Given
+        let matrix = Matrix4::from(
+            [[ -6.0, 1.0, 1.0, 6.0 ],
+             [ -8.0, 5.0, 8.0, 6.0 ],
+             [ -1.0, 0.0, 8.0, 2.0 ],
+             [ -7.0, 1.0, -1.0, 1.0 ]]
+        );
+        let sub = Matrix3::from(
+            [[ -6.0, 1.0, 6.0 ],
+             [ -8.0, 8.0, 6.0 ],
+             [ -7.0, -1.0, 1.0 ]]
+        );
+
+        // Then
+        assert_eq!(matrix.submatrix(2, 1), sub);
+    }
+
+    #[test]
+    fn minor_of_3x3_matrix() {
+        // Given
+        let m = Matrix3::from(
+            [[ 3.0, 5.0, 0.0 ],
+             [ 2.0, -1.0, -7.0 ],
+             [ 6.0, -1.0, 5.0 ]]
+        );
+        let sub = m.submatrix(1, 0);
+
+        assert_eq!(sub.determinant(), 25.0);
+        assert_eq!(m.minor(1, 0), 25.0);
+    }
+
+    #[test]
+    fn cofactor_of_3x3_matrix() {
+        // Given
+        let m = Matrix3::from(
+            [[ 3.0, 5.0, 0.0 ],
+             [ 2.0, -1.0, -7.0 ],
+             [ 6.0, -1.0, 5.0 ]]
+        );
+
+        // Then
+        assert_eq!(m.minor(0, 0), -12.0);
+        assert_eq!(m.cofactor(0, 0), -12.0);
+        assert_eq!(m.minor(1, 0), 25.0);
+        assert_eq!(m.cofactor(1, 0), -25.0);
+    }
+
+    #[test]
+    fn calculating_determinant_of_3x3_matrix() {
+        // Given
+        let m = Matrix3::from(
+            [[ 1.0, 2.0, 6.0 ],
+             [ -5.0, 8.0, -4.0 ],
+             [ 2.0, 6.0, 4.0 ]]
+        );
+
+        // Then
+        assert_eq!(m.cofactor(0, 0), 56.0);
+        assert_eq!(m.cofactor(0, 1), 12.0);
+        assert_eq!(m.cofactor(0, 2), -46.0);
+        assert_eq!(m.determinant(), -196.0);
+    }
+
+    #[test]
+    fn calculating_determinant_of_4x4_matrix() {
+        // Given
+        // Scenario: Calculating the determinant of a 4x4 matrix
+        // Given the following 4x4 matrix A:
+        // | -2 | -8 | 3 | 5 |
+        // | -3 | 1 | 7 | 3 |
+        // | 1 | 2 | -9 | 6 |
+        // | -6 | 7 | 7 | -9 |
+        let m = Matrix4::from(
+            [[ -2.0, -8.0, 3.0, 5.0 ],
+             [ -3.0, 1.0, 7.0, 3.0 ],
+             [ 1.0, 2.0, -9.0, 6.0 ],
+             [ -6.0, 7.0, 7.0, -9.0 ]]
+        );
+
+        // Then
+        assert_eq!(m.cofactor(0, 0), 690.0);
+        assert_eq!(m.cofactor(0, 1), 447.0);
+        assert_eq!(m.cofactor(0, 2), 210.0);
+        assert_eq!(m.cofactor(0, 3), 51.0);
+        assert_eq!(m.determinant(), -4071.0);
+    }
 }
