@@ -137,6 +137,26 @@ impl Matrix<4> {
             _               => -self.minor(row, col),
         }
     }
+
+    pub fn is_invertible(&self) -> bool {
+        !self.determinant().approx_eq(0.0)
+    }
+
+    pub fn invert(&self) -> Self {
+        if !self.is_invertible() {
+            panic!("Could not invert matrix {:?}", self);
+        }
+
+        let mut m2 = Self::new();
+
+        for row in 0..4 {
+            for col in 0..4 {
+                m2[(col,row)] = self.cofactor(row, col) / self.determinant();
+            }
+        }
+
+        m2
+    }
 }
 
 impl<const N: usize> PartialEq for Matrix<N> {
@@ -500,4 +520,96 @@ mod tests {
         assert_eq!(m.cofactor(0, 3), 51.0);
         assert_eq!(m.determinant(), -4071.0);
     }
+
+    #[test]
+    fn invertible_matrix_can_invert() {
+        // Given
+        let m = Matrix4::from(
+            [[ 6.0, 4.0, 4.0, 4.0 ],
+             [ 5.0, 5.0, 7.0, 6.0 ],
+             [ 4.0, -9.0, 3.0, -7.0 ],
+             [ 9.0, 1.0, 7.0, -6.0 ]]
+        );
+
+        // Then
+        assert_eq!(m.determinant(), -2120.0);
+        assert_eq!(m.is_invertible(), true);
+    }
+
+    #[test]
+    fn invertible_matrix_cannot_invert() {
+        // Given
+        let m = Matrix4::from(
+            [[ -4.0, 2.0, -2.0, -3.0 ],
+                [ 9.0, 6.0, 2.0, 6.0 ],
+                [ 0.0, -5.0, 1.0, -5.0 ],
+                [ 0.0, 0.0, 0.0, -0.0 ]]
+        );
+
+        // Then
+        assert_eq!(m.determinant(), 0.0);
+        assert_eq!(m.is_invertible(), false);
+    }
+
+    #[test]
+    fn inverse_of_a_matrix() {
+        // Given
+        let m1 = Matrix4::from(
+            [[ -5.0, 2.0, 6.0, -8.0 ],
+             [ 1.0, -5.0, 1.0, 8.0 ],
+             [ 7.0, 7.0, -6.0, -7.0 ],
+             [ 1.0, -3.0, 7.0, 4.0 ]]
+        );
+        let m2 = m1.invert();
+
+        // Then
+        assert!(m2[(3,2)].approx_eq(-160.0 / 532.0));
+        assert_eq!(m1.determinant(), 532.0);
+        assert_eq!(m1.cofactor(2, 3), -160.0);
+        assert_eq!(m2, Matrix4::from(
+            [[ 0.21805, 0.45113, 0.24060, -0.04511 ],
+             [ -0.80827, -1.45677, -0.44361, 0.52068 ],
+             [ -0.07895, -0.22368, -0.05263, 0.19737 ],
+             [ -0.52256, -0.81391, -0.30075, 0.30639 ]]
+        ));
+    }
+
+    #[test]
+    fn inverse_of_another_matrix() {
+        // Given
+        let matrix = Matrix4::from(
+            [[ 8.0, -5.0, 9.0, 2.0 ],
+             [ 7.0, 5.0, 6.0, 1.0 ],
+             [ -6.0, 0.0, 9.0, 6.0 ],
+             [ -3.0, 0.0, -9.0, -4.0 ]]
+        );
+
+        // Then
+        assert_eq!(matrix.invert(), Matrix4::from(
+            [[ -0.15385, -0.15385, -0.28205, -0.53846 ],
+             [ -0.07692, 0.12308, 0.02564, 0.03077 ],
+             [ 0.35897, 0.35897, 0.43590, 0.92308 ],
+             [ -0.69231, -0.69231, -0.76923, -1.92308 ]]
+        ));
+    }
+
+    #[test]
+    fn inverse_of_a_third_matrix() {
+        // Given
+        let matrix = Matrix4::from(
+            [[ 9.0, 3.0, 0.0, 9.0 ],
+             [ -5.0, -2.0, -6.0, -3.0 ],
+             [ -4.0, 9.0, 6.0, 4.0 ],
+             [ -7.0, 6.0, 6.0, 2.0 ]]
+        );
+
+        // Then
+        assert_eq!(matrix.invert(), Matrix4::from(
+            [[ -0.04074, -0.07778, 0.14444, -0.22222 ],
+             [ -0.07778, 0.03333, 0.36667, -0.33333 ],
+             [ -0.02901, -0.14630, -0.10926, 0.12963 ],
+             [ 0.17778, 0.06667, -0.26667, 0.33333 ]]
+        ));
+    }
+
 }
