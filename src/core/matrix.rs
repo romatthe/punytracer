@@ -486,12 +486,6 @@ mod tests {
     #[test]
     fn calculating_determinant_of_4x4_matrix() {
         // Given
-        // Scenario: Calculating the determinant of a 4x4 matrix
-        // Given the following 4x4 matrix A:
-        // | -2 | -8 | 3 | 5 |
-        // | -3 | 1 | 7 | 3 |
-        // | 1 | 2 | -9 | 6 |
-        // | -6 | 7 | 7 | -9 |
         let m = Matrix4::from(
             [[ -2.0, -8.0, 3.0, 5.0 ],
              [ -3.0, 1.0, 7.0, 3.0 ],
